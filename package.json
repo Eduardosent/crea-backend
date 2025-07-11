@@ -1,0 +1,32 @@
+{
+  "name": "crea-hono",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "watch": "bun --watch src/index.ts",
+    "dev": "bun run src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.842.0",
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^17.0.0",
+    "hono": "^4.8.4",
+    "nodemailer": "^7.0.4",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/bun": "latest",
+    "@types/node": "^24.0.8",
+    "@types/nodemailer": "^6.4.17",
+    "@types/pg": "^8.15.4",
+    "nodemon": "^3.1.10",
+    "typescript": "^5.8.3"
+  },
+  "private": true
+}
