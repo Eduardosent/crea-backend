@@ -4,9 +4,15 @@ import {
   CREATE_USER,
   FIND_USER_BY_VERIFICATION_TOKEN,
   MARK_USER_AS_VERIFIED,
+  FIND_USER_BY_ID,
 } from "@/queries/users";
 
 export class AuthRepository {
+  async findUserById(userId: string) {
+    const result = await db.query(FIND_USER_BY_ID, [userId]);
+    return result.rows[0];
+  }
+
   /**
    * Busca un usuario por su dirección de correo electrónico.
    * @param email La dirección de correo electrónico del usuario.

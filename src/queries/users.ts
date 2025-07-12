@@ -1,3 +1,7 @@
+export const FIND_USER_BY_ID = `
+  SELECT * FROM users WHERE id = $1
+`;
+
 export const FIND_USER_BY_EMAIL = `
   SELECT * FROM users WHERE email = $1
 `;

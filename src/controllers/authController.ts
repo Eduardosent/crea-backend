@@ -1,11 +1,9 @@
 import { Context } from "hono";
 import * as authService from "../services/authService";
-import { generateToken } from "@/lib/jwt";
 import { authRepository } from "@/repositories/authRepository";
-import { sendVerificationEmail } from "@/lib/email";
 
 export const handleSignup = async (c: Context) => {
-  const { email, password } = await c.req.json();
+  const { email, password } = c.get("validatedData");
   try {
     await authService.signup(email, password);
     return c.json({ message: "Usuario registrado" });
@@ -15,10 +13,10 @@ export const handleSignup = async (c: Context) => {
 };
 
 export const handleLogin = async (c: Context) => {
-  const { email, password } = await c.req.json();
+  const { email, password } = c.get("validatedData");
   try {
     const token = await authService.login(email, password);
-    return c.json({ token });
+    return c.json(token);
   } catch (e: any) {
     return c.json({ error: e.message }, 401);
   }
@@ -37,15 +35,14 @@ export const handleVerifyEmail = async (c: Context) => {
   return c.json({ message: "Correo verificado correctamente" });
 };
 
-export const handleTestEmail = async (c: Context) => {
-  const email = c.req.query("email");
-  if (!email) return c.json({ error: "Falta el parámetro email" }, 400);
+export const handleRefreshToken = async (c: Context) => {
+  const { refreshToken } = await c.req.json();
+  if (!refreshToken) return c.json({ error: "Falta refresh token" }, 400);
 
   try {
-    const token = await generateToken({ email });
-    await sendVerificationEmail(email, token);
-    return c.json({ message: `Correo de prueba enviado a ${email}` });
+    const tokens = await authService.refreshTokens(refreshToken);
+    return c.json(tokens);
   } catch (e: any) {
-    return c.json({ error: e.message }, 500);
+    return c.json({ error: e.message }, 401);
   }
 };

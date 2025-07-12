@@ -1,6 +1,10 @@
 import { authRepository } from "@/repositories/authRepository";
 import { hashPassword, verifyPassword } from "../lib/hash";
-import { generateToken } from "../lib/jwt";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyRefreshToken,
+} from "../lib/jwt";
 import { sendVerificationEmail } from "../lib/email";
 
 import { randomUUID } from "crypto";
@@ -27,6 +31,29 @@ export const login = async (email: string, password: string) => {
     throw new Error("Debes verificar tu correo antes de iniciar sesión");
   }
 
-  const token = await generateToken({ id: user.id, email: user.email });
-  return token;
+  const [accessToken, refreshToken] = await Promise.all([
+    generateAccessToken({ id: user.id, email: user.email }),
+    generateRefreshToken({ id: user.id }),
+  ]);
+
+  return { accessToken, refreshToken };
+};
+
+export const refreshTokens = async (token: string) => {
+  try {
+    const payload = (await verifyRefreshToken(token)) as { id?: string };
+    if (!payload?.id) throw new Error("Token inválid");
+    const user = await authRepository.findUserById(payload.id);
+    if (!user) throw new Error("Usuario no encontrado");
+
+    const accessToken = await generateAccessToken({
+      id: user.id,
+      email: user.email,
+    });
+    const refreshToken = await generateRefreshToken({ id: user.id });
+
+    return { accessToken, refreshToken };
+  } catch {
+    throw new Error("Refresh token inválido o expirado");
+  }
 };
