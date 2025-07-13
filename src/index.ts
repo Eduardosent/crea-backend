@@ -1,16 +1,22 @@
 import { Hono } from "hono";
-import authRoutes from "./routes/authRoutes";
 import * as dotenv from "dotenv";
-import countryRoutes from "./routes/countryRoutes";
-import countryStateRoutes from "./routes/countryStateRoutes";
+import {
+  authRoutes,
+  countriesRoutes,
+  countryStatesRoutes,
+  languagesRoutes,
+  userAccountsRoutes,
+} from "@/routes";
 
 dotenv.config();
 
 const app = new Hono();
 
 app.route("/auth", authRoutes);
-app.route("/countries", countryRoutes);
-app.route("/country-states", countryStateRoutes);
+app.route("/countries", countriesRoutes);
+app.route("/country-states", countryStatesRoutes);
+app.route("/languages", languagesRoutes);
+app.route("/user-accounts", userAccountsRoutes);
 
 app.get("/", (c) => c.text("API funcionando"));
 

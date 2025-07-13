@@ -2,9 +2,7 @@ import { Hono } from "hono";
 import { handleGetStatesByCountry } from "@/controllers/countryStateController";
 import { authMiddleware } from "@/middlewares/authMiddleware";
 
-const countryStates = new Hono();
+export const countryStatesRoutes = new Hono();
 
-countryStates.use("*", authMiddleware);
-countryStates.get("/", handleGetStatesByCountry);
-
-export default countryStates;
+countryStatesRoutes.use("*", authMiddleware);
+countryStatesRoutes.get("/", handleGetStatesByCountry);

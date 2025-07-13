@@ -1,0 +1,6 @@
+export {
+  IMAGE_EXTENSIONS,
+  VIDEO_EXTENSIONS,
+  BOOK_EXTENSIONS,
+  AUDIO_EXTENSIONS,
+} from "./fileTypes";
