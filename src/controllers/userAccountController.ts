@@ -3,7 +3,7 @@ import {
   createUserAccount,
   updateUserAccount,
 } from "@/services/userAccountService";
-import { generatePresignedUploadUrl } from "@/lib/backblaze";
+import { generatePresignedUploadUrl } from "@/lib/idrive";
 import { IMAGE_EXTENSIONS } from "@/constants";
 
 export const handleCreateUserAccount = async (c: Context) => {

@@ -15,26 +15,26 @@ export async function eliminarArchivo(fileName: string) {
     await b2.authorize();
 
     // Listar archivos para obtener fileId del archivo que quieres borrar
-    const { data } = await b2.listFileNames({
-      bucketId: "7a5d388bbbf9e722917b021b",
-      prefix: fileName, // o '' si no usas prefix
-      maxFileCount: 1,
-      startFileName: "", // agregado
-      delimiter: "", // agregado
-    });
+    // const { data } = await b2.listFileNames({
+    //   bucketId: "7a5d388bbbf9e722917b021b",
+    //   prefix: fileName, // o '' si no usas prefix
+    //   maxFileCount: 1,
+    //   startFileName: "", // agregado
+    //   delimiter: "", // agregado
+    // });
 
-    const file = data.files.find((f) => f.fileName === fileName);
+    // const file = data.files.find((f) => f.fileName === fileName);
 
-    if (!file) {
-      console.log("Archivo no encontrado");
-      return;
-    }
+    // if (!file) {
+    //   console.log("Archivo no encontrado");
+    //   return;
+    // }
 
-    const { fileId } = file;
+    // const { fileId } = file;
 
     // Eliminar el archivo
     const res = await b2.deleteFileVersion({
-      fileId,
+      fileId: "",
       fileName,
     });
 

@@ -5,7 +5,6 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import s3 from "@/config/s3";
-import { eliminarArchivo } from "@/config/b2";
 
 const mimeTypes: Record<string, string> = {
   jpg: "image/jpeg",
@@ -45,19 +44,25 @@ export const generatePresignedUploadUrl = async (
   });
 
   const uploadUrl = await getSignedUrl(s3, command, { expiresIn });
-  const publicUrl = `https://f005.backblazeb2.com/file/${process.env.B2_BUCKET}/${key}`;
+  // Construir URL pública según configuración de IDrive (si tienes CDN o similar)
+  // Por defecto el URL para acceso público puede variar, asegúrate si tienes algo configurado
+  // Aquí dejo un ejemplo genérico:
+  const publicUrl = `${process.env.B2_ENDPOINT}/crea-files/${key}`;
+
+  //   ${process.env.B2_BUCKET}
 
   return { uploadUrl, publicUrl };
 };
 
-export const deleteObjectFromBackblaze = async (key: string) => {
+export const deleteObjectFromIDrive = async (key: string) => {
   const command = new DeleteObjectCommand({
     Bucket: process.env.B2_BUCKET!,
     Key: key,
   });
 
   const result = await s3.send(command);
-  console.log(key, result);
+  console.log(`Eliminado: ${key}`, result);
+
   try {
     await s3.send(
       new HeadObjectCommand({
@@ -65,10 +70,23 @@ export const deleteObjectFromBackblaze = async (key: string) => {
         Key: key,
       })
     );
-    console.log("Sigue existiendo");
-  } catch (e) {
-    if (e.name === "NotFound") {
-      console.log("Ya no existe en S3");
+    console.log("El archivo sigue existiendo");
+  } catch (e: any) {
+    if (e.name === "NotFound" || e.$metadata?.httpStatusCode === 404) {
+      console.log("Archivo eliminado correctamente");
+    } else {
+      console.error("Error verificando la eliminación:", e);
     }
   }
 };
+
+export const parseIDriveKeyFromUrl = (url: string): string | null => {
+  const bucket = process.env.B2_BUCKET!;
+  const endpoint = process.env.B2_ENDPOINT!;
+  const baseUrl = `${endpoint}/crea-files/`;
+
+  if (!url.startsWith(baseUrl)) return null;
+
+  return url.slice(baseUrl.length);
+};
+// https://u0m6.or.idrivee2-78.com/crea-files/profile-pictures/898819bc-22a8-4561-b18d-28e494eed761-1752443842853.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=XIFJYCRVH-28A772B788%2F20250713%2Fus-west-1%2Fs3%2Faws4_request&X-Amz-Date=20250713T220013Z&X-Amz-Expires=604800&X-Amz-Signature=7e8fe228985ce5534f4b3847793c346afb384d9ace04b32413cb49060f111a90&X-Amz-SignedHeaders=host&versionId=null&x-amz-checksum-mode=ENABLED&x-id=GetObject

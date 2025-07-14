@@ -1,6 +1,7 @@
 import { eliminarArchivo } from "@/config/b2";
 import { deleteObjectFromBackblaze } from "@/lib/backblaze";
 import { parseBackblazeKeyFromUrl } from "@/lib/backblazeUtils";
+import { deleteObjectFromIDrive, parseIDriveKeyFromUrl } from "@/lib/idrive";
 import { userAccountRepository } from "@/repositories/userAccountRepository";
 import { PatchUserAccount } from "@/types";
 
@@ -53,10 +54,9 @@ export const updateUserAccount = async (
 
   // Si había una imagen anterior, la eliminamos del bucket
   if (oldUrl) {
-    eliminarArchivo(oldUrl);
-    // const oldKey = parseBackblazeKeyFromUrl(oldUrl);
-    // console.log("oldKey", oldKey);
-    // if (oldKey) await deleteObjectFromBackblaze(oldKey);
+    const oldKey = parseIDriveKeyFromUrl(oldUrl);
+    console.log("oldKey", oldKey);
+    if (oldKey) await deleteObjectFromIDrive(oldKey);
   }
 
   // Actualizar con nueva URL
